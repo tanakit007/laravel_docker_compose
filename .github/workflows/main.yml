@@ -1,0 +1,18 @@
+name: CI-Docker-Laravel  # ชื่อที่จะไปปรากฏในหน้า Actions
+
+on:
+  push:
+    branches: [ "main" ]  # ให้ทำงานทุกครั้งที่คุณ push โค้ดขึ้น branch main
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Docker Image
+      run: docker compose build  # สั่งให้ GitHub ลอง Build Docker ตามไฟล์ที่คุณมี
