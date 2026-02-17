@@ -1,18 +1,37 @@
-name: CI-Docker-Laravel  # ชื่อที่จะไปปรากฏในหน้า Actions
+name: pages-build-deployment
 
 on:
   push:
-    branches: [ "main" ]  # ให้ทำงานทุกครั้งที่คุณ push โค้ดขึ้น branch main
-  pull_request:
-    branches: [ "main" ]
+    branches: ["main"] # หรือชื่อ branch ของคุณ
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # อัปโหลดไฟล์ทั้งหมดในโปรเจกต์
 
-    - name: Build Docker Image
-      run: docker compose build  # สั่งให้ GitHub ลอง Build Docker ตามไฟล์ที่คุณมี
+  report-build-status:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report
+        run: echo "Build Status OK"
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
